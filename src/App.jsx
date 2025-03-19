@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Bar, Pie, Scatter } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement } from 'chart.js';
-import.meta.env.VITE_API_URL
 
 // Register Chart.js components
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement);
@@ -29,7 +28,7 @@ function App() {
 
   const fetchData = async () => {
     try {
-      const res = await axios.get('VITE_API_URL/data/');
+      const res = await axios.get('http://localhost:8000/api/data/');
       setData(res.data);
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -43,7 +42,7 @@ function App() {
     const formData = new FormData();
     formData.append('file', file);
     try {
-      await axios.post('VITE_API_URL/upload/', formData);
+      await axios.post('http://localhost:8000/api/upload/', formData);
       fetchData();
     } catch (error) {
       console.error('Error uploading file:', error);
@@ -54,7 +53,7 @@ function App() {
   const startEditing = (row) => setEditingRow(row.id);
   const handleEdit = async (id, updatedData) => {
     try {
-      await axios.put(`VITE_API_URL/data/${id}/`, updatedData);
+      await axios.put(`http://localhost:8000/api/data/${id}/`, updatedData);
       setEditingRow(null);
       fetchData();
     } catch (error) {
@@ -65,7 +64,7 @@ function App() {
   // Handle delete
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`VITE_API_URL/data/${id}/`);
+      await axios.delete(`http://localhost:8000/api/data/${id}/`);
       fetchData();
     } catch (error) {
       console.error('Error deleting data:', error);
@@ -84,7 +83,7 @@ function App() {
   const startGenerating = () => {
     if (!generating) {
       setGenerating(true);
-      const source = new EventSource('VITE_API_URL/generate/start/');
+      const source = new EventSource('http://localhost:8000/api/generate/start/');
       setEventSource(source);
       source.onopen = () => {
         console.log('SSE connection opened');
@@ -110,7 +109,7 @@ function App() {
       setEventSource(null);
     }
     try {
-      await axios.post('VITE_API_URL/generate/stop/');
+      await axios.post('http://localhost:8000/api/generate/stop/');
       setGenerating(false);
       fetchData(); // Refresh with actual DB data
     } catch (error) {
@@ -122,7 +121,7 @@ function App() {
   // Chart data fetching
   const fetchBarChartData = async () => {
     try {
-      const res = await axios.get('VITE_API_URL/charts/revenue/');
+      const res = await axios.get('http://localhost:8000/api/charts/revenue/');
       setChartType('bar');
       setChartData({
         labels: res.data.map(item => item.name),
@@ -139,7 +138,7 @@ function App() {
 
   const fetchPieChartData = async () => {
     try {
-      const res = await axios.get('VITE_API_URL/charts/country/');
+      const res = await axios.get('http://localhost:8000/api/charts/country/');
       setChartType('pie');
       setChartData({
         labels: res.data.map(item => item.country),
@@ -156,7 +155,7 @@ function App() {
 
   const fetchDynamicChartData = async () => {
     try {
-      const res = await axios.get('VITE_API_URL/charts/dynamic/');
+      const res = await axios.get('http://localhost:8000/api/charts/dynamic/');
       setChartType('scatter');
       setChartData({
         datasets: [{
